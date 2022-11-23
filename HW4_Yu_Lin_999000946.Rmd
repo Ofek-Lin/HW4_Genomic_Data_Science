@@ -14,8 +14,6 @@ knitr::opts_chunk$set(echo = TRUE)
 Here, import an example count table and do some exploration of the expression data. 
 
 ```{r}
-library(pheatmap)
-library(corrplot)
 counts_file <- system.file("extdata/rna-seq/SRP029880.raw_counts.tsv",
                            package = "compGenomRData")
 coldata_file <- system.file("extdata/rna-seq/SRP029880.colData.tsv", 
@@ -25,6 +23,8 @@ coldata_file <- system.file("extdata/rna-seq/SRP029880.colData.tsv",
 
 1. Normalize the counts using the TPM approach. 
 ```{r}
+library(pheatmap)
+library(corrplot)
 counts <- read.delim(counts_file)
 coldata <- read.delim(coldata_file)
 

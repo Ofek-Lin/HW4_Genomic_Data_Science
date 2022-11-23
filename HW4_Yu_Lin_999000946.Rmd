@@ -1,0 +1,76 @@
+---
+title: "HW4"
+author: "Yu Lin, 999000946"
+date: "11/23/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Exploring the count tables
+
+Here, import an example count table and do some exploration of the expression data. 
+
+```{r}
+library(pheatmap)
+library(corrplot)
+counts_file <- system.file("extdata/rna-seq/SRP029880.raw_counts.tsv",
+                           package = "compGenomRData")
+coldata_file <- system.file("extdata/rna-seq/SRP029880.colData.tsv", 
+                            package = "compGenomRData")
+```
+
+
+1. Normalize the counts using the TPM approach. 
+```{r}
+counts <- read.delim(counts_file)
+coldata <- read.delim(coldata_file)
+
+tpm <- apply(subset(counts, select = -width), 2, function(X) X/sum(X)*(10^6))
+```
+
+2. Plot a heatmap of the top 500 most variable genes. Compare with the heatmap obtained using the 100 most variable genes. Hint : use var() function to compute the variance. 
+```{r}
+tpm <- cbind(tpm, apply(tpm, 1, function(X) var(X)))
+colnames(tpm)[11] <- "var"
+## top 500
+pheatmap(tpm[order(tpm[,11], decreasing = T)[1:500],1:10], scale = "row", show_rownames = F)
+## top 100
+pheatmap(tpm[order(tpm[,11], decreasing = T)[1:100],1:10], scale = "row", show_rownames = F)
+```
+
+3. Re-do the heatmaps setting the `scale` argument to `none`, and `column`. Compare the results with `scale = 'row'`.
+```{r}
+## scale = none
+## top 500
+pheatmap(tpm[order(tpm[,11], decreasing = T)[1:500],1:10], scale = "none", show_rownames = F)
+## top 500
+pheatmap(tpm[order(tpm[,11], decreasing = T)[1:100],1:10], scale = "none", show_rownames = F)
+
+## scale = column
+## top 100
+pheatmap(tpm[order(tpm[,11], decreasing = T)[1:500],1:10], scale = "column", show_rownames = F)
+## top 100
+pheatmap(tpm[order(tpm[,11], decreasing = T)[1:100],1:10], scale = "column", show_rownames = F)
+```
+
+4. Draw a correlation plot for the samples depicting the sample differences as 'ellipses', drawing only the upper end of the matrix, and order samples by hierarchical clustering results based on `average` linkage clustering method. 
+```{r}
+cor_tpm <- cor(tpm[,1:10])
+corrplot(cor_tpm, method = "ellipse", order = "hclust", hclust.method = "average",
+         type = "upper", addCoef.col = "white",
+         number.cex = 0.7)
+```
+
+
+### Git and Github
+
+5. Open Github account, and install git if it required as instructed in the following link: https://github.com/llendway/github_for_collaboration/blob/master/github_for_collaboration.md
+
+6. Create a repository and commit and push the answers of this exercise through Rtudio (Please upload the answers to the exercises also to Moodle).
+
+7. Insert the link to your Github account here.
+
+https://github.com/Ofek-Lin/HW4_Genomic_Data_Science.git
